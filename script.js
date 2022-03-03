@@ -25,10 +25,25 @@ const successCallBack = function(position){
     }).addTo(map);
 
   // marker for our current location
-  L.marker([latitude, longitude])
-    .addTo(map)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customisable')
-    .openPopup();
+
+
+  // add event handler to map to get marker when we click on map
+  map.on('click', function(mapEvent) {
+    const {lat, lng} = mapEvent.latlng;
+    L.marker([lat, lng])
+      .addTo(map)
+      .bindPopup(
+        L.popup({
+        maxWidth: 250,
+        minWidth: 100,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'running-popup'
+      })
+      )
+      .setPopupContent('Workout')
+      .openPopup();
+  })
 }
 const errorCallBack = function() {
   alert("Could not get your location")
