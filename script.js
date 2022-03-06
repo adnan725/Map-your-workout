@@ -57,14 +57,14 @@ class Cycling extends Workout {
 
 class App {
   #map;
+  #mapZoomLevel = 13;
   #mapEvent;
   #workouts = [];
   constructor() {
-    this._getPosition()
-
+    this._getPosition();
     form.addEventListener('submit', this._newWorkout.bind(this));
-
-    inputType.addEventListener('change', this._toggleElevationField)
+    inputType.addEventListener('change', this._toggleElevationField);
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this))
   }
 
   _getPosition() {
@@ -80,7 +80,7 @@ class App {
       // google map link for current location
       console.log(`https://www.google.de/maps/dir///@${latitude},${longitude},14z`)
       // Now, this is what we want to happen after getting coordinates (create a map and add out Coordinates in it.
-      this.#map = L.map('map').setView([latitude, longitude], 13);
+      this.#map = L.map('map').setView([latitude, longitude], this.#mapZoomLevel);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.fr/hot/copyright">OpenStreetMap</a> contributors'
       }).addTo(this.#map);
@@ -229,6 +229,20 @@ class App {
       `;
 
     form.insertAdjacentHTML('afterend', html)
+  }
+
+  _moveToPopup(e) {
+    const workoutEl = e.target.closest('.workout')
+
+    if (!workoutEl) return
+
+    const workout = this.#workouts.find(work => work.id === workoutEl.dataset.id);
+    this.#map.setView(workout.coords, this.#mapZoomLevel, {
+      animate: true,
+      pan: {
+        duration: 1
+      }
+    })
   }
 }
 
